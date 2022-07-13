@@ -1,0 +1,14 @@
+# mac
+.DC_Store
+
+# Editors
+.vscode/
+
+# Python stuff
+__pycache__/
+
+# Sqlite
+*.sqlite3
+
+# pre-commits
+.pre-commit-config.yaml
