@@ -20,4 +20,4 @@ jobs:
       - name: Run Linter
         run: pipenv run flake8 ./
       - name: Run formators
-        run: pipenv run black --check ./ && pipenv run isort --check-only ./
+        run: pipenv run black --check ./ --exclude='/migrations/' && pipenv run isort --profile black --check-only ./
