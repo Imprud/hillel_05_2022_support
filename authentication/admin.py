@@ -10,6 +10,7 @@ from .models import Role, User
 class UserAdmin(admin.ModelAdmin):
     readonly_fields: list[str] = ["password"]
     exclude: list[str] = ["user_permissions", "groups"]
+    list_filter = ("age",)
 
 
 @admin.register(Role)

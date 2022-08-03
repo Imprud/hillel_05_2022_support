@@ -5,6 +5,11 @@ from django.db import models
 
 from shared.django import TimeStampMixin
 
+DEFAULT_ROLES = {
+    "admin": 1,
+    "user": 2,
+}
+
 
 class CustomUserManager(UserManager):
     """Custom user manager."""
@@ -18,23 +23,32 @@ class CustomUserManager(UserManager):
         user = self.model(email=email, username=username, **kwargs)
         user.set_password(password)
         user.save()
+
         return user
 
     def create_superuser(
         self,
         email: str,
-        user: Optional[str] = None,
+        username: Optional[str] = None,
         password: Optional[str] = None,
         **kwargs
     ):
-        super_user_payload = {"is_superuser": True, "is_active": True, "is_staff": True}
-        return self.create_user(email, user, password, **super_user_payload)
+        payload: dict = kwargs | {
+            "is_superuser": True,
+            "is_active": True,
+            "is_staff": True,
+            "role_id": DEFAULT_ROLES["admin"],
+        }
+        return self.create_user(email, username, password, **payload)
 
 
 class Role(TimeStampMixin):
     """Users role. Used for giving permissions."""
 
     name = models.CharField(max_length=50)
+
+    def __str__(self) -> str:
+        return self.name
 
 
 class User(AbstractBaseUser, PermissionsMixin, TimeStampMixin):
@@ -51,7 +65,16 @@ class User(AbstractBaseUser, PermissionsMixin, TimeStampMixin):
     is_active = models.BooleanField(default=True)
     is_superuser = models.BooleanField(default=False)
 
-    # role = models.ForeignKey(null=True, default=)
+    role = models.ForeignKey(
+        "Role",
+        null=True,
+        default=DEFAULT_ROLES["user"],
+        on_delete=models.SET_NULL,
+        related_name="users",
+    )
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    updateed_at = models.DateTimeField(auto_now=True)
 
     EMAIL_FIELD = "email"
     USERNAME_FIELD = EMAIL_FIELD
