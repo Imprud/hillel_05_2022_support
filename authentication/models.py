@@ -73,9 +73,6 @@ class User(AbstractBaseUser, PermissionsMixin, TimeStampMixin):
         related_name="users",
     )
 
-    created_at = models.DateTimeField(auto_now_add=True)
-    updateed_at = models.DateTimeField(auto_now=True)
-
     EMAIL_FIELD = "email"
     USERNAME_FIELD = EMAIL_FIELD
     REQUIRED_FIELDS = []

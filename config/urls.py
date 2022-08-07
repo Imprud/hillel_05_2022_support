@@ -1,22 +1,14 @@
 from django.contrib import admin
-from django.urls import path
+from django.urls import include, path
 
-from core.api.exchange_rate import btc_usd, history, home
-from core.api.tickets import get_all_tickets
-
-# def home(request):
-#     headers = {"Content-Type": "application/json"}
-#     message = {"message": "Hello here"}
-#     data = json.dumps(message)
-#     return HttpResponse(data, headers=headers)
-
+from . import settings
 
 urlpatterns = [
     path("admin/", admin.site.urls),
-    path("home/", home),
-    # exchange rates
-    path("btc_usd/", btc_usd),
-    path("history/", history),
-    # tickets
-    path("tickets/", get_all_tickets),
+    path("tickets/", include("core.urls")),
+    path("exchange_rates/", include("exchange_rates.urls")),
+    # path('api-auth/', include('rest_framework.urls')),
 ]
+
+if settings.DEBUG:
+    urlpatterns += [path("__debug__/", include("debug_toolbar.urls"))]

@@ -6,7 +6,7 @@ DEBUG = True
 ALLOWED_HOSTS = []
 
 
-INSTALLED_APPS = [
+DJANGO_APPS = [
     # Django apps
     "django.contrib.admin",
     "django.contrib.auth",
@@ -14,10 +14,19 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-    # local apps
+]
+
+LOCAL_APPS = [
     "core",
     "authentication",
+    "exchange_rates",
 ]
+
+THIRD_PARTY_APPS = [
+    "rest_framework",
+]
+
+INSTALLED_APPS = DJANGO_APPS + LOCAL_APPS + THIRD_PARTY_APPS
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
@@ -28,6 +37,16 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
+
+# DEV TOOLS and settings
+if DEBUG:
+    # for debug toolbar
+    MIDDLEWARE += [
+        "debug_toolbar.middleware.DebugToolbarMiddleware",
+    ]
+    INTERNAL_IPS = ["127.0.0.1"]
+    INSTALLED_APPS += ["debug_toolbar", "django_extensions"]
+
 
 ROOT_URLCONF = "config.urls"
 
