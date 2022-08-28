@@ -1,5 +1,6 @@
 from rest_framework import status
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from rest_framework.response import Response
 
 from core.models import Ticket
@@ -7,6 +8,7 @@ from core.serializers import TicketLightSerializer, TicketSerializer
 
 
 @api_view(["GET", "POST"])
+@permission_classes([IsAuthenticatedOrReadOnly])
 def get_post_tickets(request):
     if request.method == "GET":
         tickets = Ticket.objects.all()
@@ -21,6 +23,7 @@ def get_post_tickets(request):
 
 
 @api_view(["GET", "PUT", "DELETE"])
+@permission_classes([IsAuthenticatedOrReadOnly])
 def retrieve_update_delete_ticket(request, id_: int):
 
     try:
@@ -48,6 +51,7 @@ def retrieve_update_delete_ticket(request, id_: int):
         new_data = TicketSerializer(ticket).data
         for key, value in request.data.items():
             new_data[key] = value
+
         serializer = TicketSerializer(ticket, data=new_data)
         if serializer.is_valid():
             serializer.save()

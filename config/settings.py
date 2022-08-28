@@ -22,9 +22,7 @@ LOCAL_APPS = [
     "exchange_rates",
 ]
 
-THIRD_PARTY_APPS = [
-    "rest_framework",
-]
+THIRD_PARTY_APPS = ["rest_framework", "rest_framework.authtoken"]
 
 INSTALLED_APPS = DJANGO_APPS + LOCAL_APPS + THIRD_PARTY_APPS
 
@@ -104,3 +102,14 @@ STATIC_URL = "/static/"
 
 # Default primary key field type
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+
+REST_FRAMEWORK = {
+    # Use Django's standard `django.contrib.auth` permissions,
+    # or allow read-only access for unauthenticated users.
+    "DEFAULT_PERMISSION_CLASSES": ["rest_framework.permissions.IsAuthenticated"],
+    "DEFAULT_AUTHENTICATION_CLASSES": [
+        "rest_framework.authentication.SessionAuthentication",
+        "rest_framework.authentication.TokenAuthentication",
+    ],
+}
