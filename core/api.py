@@ -1,15 +1,17 @@
 from django.db.models import Q
 from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView
-from rest_framework.permissions import IsAuthenticated
 
 from authentication.models import DEFAULT_ROLES
 from core.models import Ticket
-from core.permissions import OperatorOrClientsReadOnly
+from core.permissions import (
+    AuthenticatedAndCreateTicketClientOnly,
+    OperatorOrClientsReadOnly,
+)
 from core.serializers import TicketLightSerializer, TicketSerializer
 
 
 class TicketsListCreateAPI(ListCreateAPIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [AuthenticatedAndCreateTicketClientOnly]
     http_method_names = ["get", "post"]
     queryset = Ticket.objects.all()
     serializer_class = TicketLightSerializer
@@ -33,6 +35,10 @@ class TicketRetriveUpdateDestroyAPI(RetrieveUpdateDestroyAPIView):
     queryset = Ticket.objects.all()
     serializer_class = TicketSerializer
     lookup_url_kwarg = "id_"
+
+    def get_queryset(self):
+        user = self.request.user
+        return Ticket.objects.filter(client=user)
 
 
 # class TicketsListAPI(ListAPIView):

@@ -1,3 +1,4 @@
+from django.core.exceptions import ValidationError
 from rest_framework import serializers
 
 from authentication.models import Role, User
@@ -35,6 +36,8 @@ class TicketSerializer(serializers.ModelSerializer):
     # but logic of the support doesn't require this)
     def validate(self, attrs) -> dict:
         theme = attrs.get("theme")
+
+        attrs["client"] = self.context["request"].user
         if not theme:
             return attrs
 
@@ -43,7 +46,7 @@ class TicketSerializer(serializers.ModelSerializer):
         except Ticket.DoesNotExist:
             return attrs
 
-        raise ValueError("The ticket is already in the database.")
+        raise ValidationError("The ticket is already in the database.")
 
         # NOTE: it's for practice (just to try)
         # data = Ticket.objects.values_list('theme')
