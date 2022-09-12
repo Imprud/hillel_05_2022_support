@@ -1,13 +1,23 @@
+from django.core.exceptions import BadRequest
 from django.db.models import Q
-from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView
+from rest_framework.generics import (
+    ListCreateAPIView,
+    RetrieveUpdateDestroyAPIView,
+    UpdateAPIView,
+)
 
 from authentication.models import DEFAULT_ROLES
 from core.models import Ticket
 from core.permissions import (
     AuthenticatedAndCreateTicketClientOnly,
+    OperatorOnly,
     OperatorOrClientsReadOnly,
 )
-from core.serializers import TicketLightSerializer, TicketSerializer
+from core.serializers import (
+    TicketAssignSerializer,
+    TicketLightSerializer,
+    TicketSerializer,
+)
 
 
 class TicketsListCreateAPI(ListCreateAPIView):
@@ -23,8 +33,18 @@ class TicketsListCreateAPI(ListCreateAPIView):
 
     def get_queryset(self):
         user = self.request.user
+        empty_param = self.request.GET.get("empty")
 
         if user.role.id == DEFAULT_ROLES["admin"]:
+            if empty_param == "true":
+                return Ticket.objects.filter(operator=None)
+            elif empty_param == "false":
+                return Ticket.objects.filter(operator=user)
+            elif empty_param:
+                raise BadRequest(
+                    "'empty' param value error. Use only 'true' or 'false'"
+                )
+
             return Ticket.objects.filter(Q(operator=None) | Q(operator=user))
 
         return Ticket.objects.filter(client=user)
@@ -38,7 +58,19 @@ class TicketRetriveUpdateDestroyAPI(RetrieveUpdateDestroyAPIView):
 
     def get_queryset(self):
         user = self.request.user
-        return Ticket.objects.filter(client=user)
+        if user.role.id == DEFAULT_ROLES["user"]:
+            return Ticket.objects.filter(client=user)
+        return Ticket.objects.filter(operator=user)
+
+
+class TicketAssignApi(UpdateAPIView):
+    http_method_names = ["patch"]
+    serializer_class = TicketAssignSerializer
+    permission_classes = [OperatorOnly]
+    lookup_url_kwarg = "id_"
+
+    def get_queryset(self):
+        return Ticket.objects.filter(operator=None)
 
 
 # class TicketsListAPI(ListAPIView):

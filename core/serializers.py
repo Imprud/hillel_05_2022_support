@@ -34,7 +34,7 @@ class TicketSerializer(serializers.ModelSerializer):
 
     # NOTE: this validation doesn't need by logic (we may change model field by unique value,
     # but logic of the support doesn't require this)
-    def validate(self, attrs) -> dict:
+    def validate(self, attrs: dict) -> dict:
         theme = attrs.get("theme")
 
         attrs["client"] = self.context["request"].user
@@ -63,3 +63,14 @@ class TicketLightSerializer(serializers.ModelSerializer):
     class Meta:
         model = Ticket
         fields = ["id", "theme", "resolved", "operator", "client"]
+
+
+class TicketAssignSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Ticket
+        fields = ["operator"]
+
+    def validate(self, attrs: dict) -> dict:
+        # NOTE: add curent user to 'attrs' object
+        attrs["operator"] = self.context["request"].user
+        return attrs
