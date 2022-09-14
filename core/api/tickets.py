@@ -5,6 +5,7 @@ from rest_framework.generics import (
     RetrieveUpdateDestroyAPIView,
     UpdateAPIView,
 )
+from rest_framework.response import Response
 
 from authentication.models import DEFAULT_ROLES
 from core.models import Ticket
@@ -18,6 +19,7 @@ from core.serializers import (
     TicketLightSerializer,
     TicketSerializer,
 )
+from core.services import TicketsCRUD
 
 
 class TicketsListCreateAPI(ListCreateAPIView):
@@ -71,6 +73,25 @@ class TicketAssignApi(UpdateAPIView):
 
     def get_queryset(self):
         return Ticket.objects.filter(operator=None)
+
+
+class TicketResolveApi(UpdateAPIView):
+    http_method_names = ["patch"]
+    serializer_class = TicketLightSerializer
+    permission_classes = [OperatorOnly]
+    lookup_url_kwarg = "id_"
+
+    def get_queryset(self):
+        user = self.request.user
+        return Ticket.objects.filter(operator=user)
+
+    def update(self, request, *args, **kwargs):
+        instance = self.get_object()
+        TicketsCRUD.change_resolved_status(instance)
+
+        serializer = self.get_serializer(instance)
+
+        return Response(serializer.data)
 
 
 # class TicketsListAPI(ListAPIView):
