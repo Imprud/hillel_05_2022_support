@@ -45,12 +45,7 @@ class CommentClientOrOperatorOnly(BasePermission):
         try:
             ticket = Ticket.objects.get(id=ticket_id)
             return bool(
-                (
-                    ticket.client == request.user
-                    and ticket.operator
-                    or ticket.operator == request.user
-                )
-                and not ticket.resolved
+                ticket.client == request.user or ticket.operator == request.user
             )
         except ObjectDoesNotExist:
             raise NotFound("Comments not found")
