@@ -40,7 +40,7 @@ class Comment(TimeStampMixin):
     ticket = models.ForeignKey(
         "Ticket",
         on_delete=models.CASCADE,
-        related_name="operator_tickets",
+        related_name="comments",
     )
 
     prev_comment = models.OneToOneField(
@@ -51,5 +51,20 @@ class Comment(TimeStampMixin):
         related_name="next",
     )
 
+    reply_to = models.ForeignKey(
+        "self",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="answers",
+    )
+
     def __str__(self) -> str:
         return f"{self.ticket} | {self.text[:20]}"
+
+    def save(self, *args, **kwargs):
+        if self.prev_comment.id == self.id:
+            raise ValueError("Current comment can not be Prev comment.")
+        if self.reply_to and self.reply_to.id == self.id:
+            raise ValueError("You can not reply on a current comment")
+        return super().save(*args, **kwargs)

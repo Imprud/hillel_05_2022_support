@@ -1,7 +1,10 @@
+from django.core.exceptions import ObjectDoesNotExist
 from django.forms import ValidationError
+from rest_framework.exceptions import NotFound
 from rest_framework.permissions import SAFE_METHODS, BasePermission
 
 from authentication.models import DEFAULT_ROLES
+from core.models import Ticket
 
 
 class OperatorOnly(BasePermission):
@@ -32,3 +35,22 @@ class AuthenticatedAndCreateTicketClientOnly(BasePermission):
             raise ValidationError("Only users can create a new ticket")
 
         return bool(request.user and request.user.is_authenticated)
+
+
+class CommentClientOrOperatorOnly(BasePermission):
+    """only Operator or Client can create or read comments and ticket must be unresolved"""
+
+    def has_permission(self, request, view):
+        ticket_id = request.parser_context["kwargs"]["ticket_id"]
+        try:
+            ticket = Ticket.objects.get(id=ticket_id)
+            return bool(
+                (
+                    ticket.client == request.user
+                    and ticket.operator
+                    or ticket.operator == request.user
+                )
+                and not ticket.resolved
+            )
+        except ObjectDoesNotExist:
+            raise NotFound("Comments not found")
