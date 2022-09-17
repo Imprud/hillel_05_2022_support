@@ -10,15 +10,13 @@ class CommentSerializer(serializers.ModelSerializer):
         read_only_fields = ["ticket", "user", "prev_comment"]
 
     def validate(self, attrs: dict) -> dict:
-        request = self.context["request"]
-        ticket_id: int = request.parser_context["kwargs"]["ticket_id"]
+        ticket_id: int = self.context["request"].parser_context["kwargs"]["ticket_id"]
         ticket: Ticket = Ticket.objects.get(id=ticket_id)
+
         attrs["ticket"] = ticket
-        attrs["user"] = request.user
+        attrs["user"] = self.context["request"].user
 
-        last_comment: Comment | None = ticket.comments.last()
-
-        attrs["prev_comment"] = last_comment if last_comment else None
+        attrs["prev_comment"] = ticket.comments.last()
 
         return attrs
 

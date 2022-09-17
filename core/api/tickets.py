@@ -35,7 +35,7 @@ class TicketsListCreateAPI(ListCreateAPIView):
 
     def get_queryset(self):
         user = self.request.user
-        empty_param = self.request.GET.get("empty")
+        empty_param = self.request.query_params["empty"]
 
         if user.role.id == DEFAULT_ROLES["admin"]:
             if empty_param == "true":
