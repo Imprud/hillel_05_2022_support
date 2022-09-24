@@ -116,3 +116,34 @@ For CI/CD:
 - isort
 - black
 - flake8
+
+
+## Run application with docker
+
+```bash
+docker build -t support_django .
+docker run -p 8000:80 --rm -it -v $PWD:/app/ support_django
+
+```
+
+## Run application with docker-compose
+
+
+```bash
+docker-compose build
+docker-compose up -d
+
+```
+
+### Dump postgress DB
+
+```bash
+docker-compose exec postgres pg_dump -U support support > db-backup-$(date +%d-%m-%y).sql
+```
+
+### Load postgress DB
+
+```bash
+docker-compose exec -T postgres psql -U support support < db-backup-24-09-22.sql
+```
+change <code>db-backup-24-09-22.sql</code> to current DB dump file name

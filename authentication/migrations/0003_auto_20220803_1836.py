@@ -7,9 +7,7 @@ from authentication.services import create_dev_user
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('authentication', '0002_auto_20220803_1823'),
+        ("authentication", "0002_auto_20220803_1823"),
     ]
 
-    operations = [
-        migrations.RunPython(create_dev_user)
-    ]
+    operations = [migrations.RunPython(create_dev_user)]
