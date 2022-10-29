@@ -1,5 +1,9 @@
 FROM python:3.10-slim
 
+
+# Recive build arguments
+ARG PIPENV_EXTRA_ARG
+
 # Change working directory 
 WORKDIR /app/
 
@@ -8,7 +12,7 @@ COPY . .
 
 # install dependencies
 RUN pip install pipenv \
-    && pipenv install --system --deploy --ignore-pipfile --dev
+    && pipenv install --system --deploy --ignore-pipfile $PIPENV_EXTRA_ARG
 
 # Dima suggest use this method:
 # CMD ["python", "manage.py", "runserver" "0.0.0.0:80"]
