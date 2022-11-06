@@ -17,6 +17,6 @@ RUN pip install pipenv && pipenv install --system --deploy --ignore-pipfile $PIP
 # CMD ["python", "manage.py", "runserver" "0.0.0.0:80"]
 CMD sleep 3 \
     && python src/manage.py migrate \
-    && gunicorn src.config.wsgi:application
+    && gunicorn src.config.wsgi:application --bind 0.0.0.0:80
 # but we also can use simply this:
 # CMD python manage.py runserver 0.0.0.0:80
