@@ -1,5 +1,7 @@
 # Django files description
 
+
+
 ## Project structure
 Here is a representation of the files structure:
 ```
@@ -117,6 +119,15 @@ For CI/CD:
 - black
 - flake8
 
+
+
+## Mandotary steps
+
+### Create '.env' file
+```bash
+cp .env.default .env
+
+```
 
 ## Run application with docker
 
