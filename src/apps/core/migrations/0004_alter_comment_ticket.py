@@ -17,7 +17,7 @@ class Migration(migrations.Migration):
             field=models.ForeignKey(
                 on_delete=django.db.models.deletion.CASCADE,
                 related_name="comments",
-                to="apps.core.ticket",
+                to="core.ticket",
             ),
         ),
     ]

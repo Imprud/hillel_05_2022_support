@@ -35,7 +35,7 @@ class Migration(migrations.Migration):
                         null=True,
                         on_delete=django.db.models.deletion.SET_NULL,
                         related_name="next",
-                        to="apps.core.comment",
+                        to="core.comment",
                     ),
                 ),
                 (
@@ -43,7 +43,7 @@ class Migration(migrations.Migration):
                     models.ForeignKey(
                         on_delete=django.db.models.deletion.CASCADE,
                         related_name="operator_tickets",
-                        to="apps.core.ticket",
+                        to="core.ticket",
                     ),
                 ),
                 (
