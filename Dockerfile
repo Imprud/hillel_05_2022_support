@@ -8,7 +8,7 @@ ARG PIPENV_EXTRA_ARG
 WORKDIR /app/
 
 # Copy project files
-COPY . .
+COPY ./ ./
 
 # install dependencies
 RUN pip install pipenv && pipenv install --system --deploy --ignore-pipfile $PIPENV_EXTRA_ARG
